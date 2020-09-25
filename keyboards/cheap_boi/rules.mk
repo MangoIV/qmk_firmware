@@ -14,6 +14,7 @@ MCU = atmega32u4
 #     software delays.
 F_CPU = 16000000
 
+BOOTLOADER = atmel-dfu
 #
 # LUFA specific
 #
@@ -53,5 +54,5 @@ SLEEP_LED_ENABLE ?= no  # Breathing sleep LED during USB suspend
 NKRO_ENABLE ?= yes		# USB Nkey Rollover - if this doesn't work, see here: https://github.com/tmk/tmk_keyboard/wiki/FAQ#nkro-doesnt-work
 BACKLIGHT_ENABLE ?= no  # Enable keyboard backlight functionality
 AUDIO_ENABLE ?= no
-RGBLIGHT_ENABLE ?= yes
+RGBLIGHT_ENABLE = yes
 OLED_DRIVER_ENABLE = yes

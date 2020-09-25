@@ -46,7 +46,6 @@
 #pragma once
 
 #define IGNORE_MOD_TAP_INTERRUPT
-#define OLED_FONT_H "keyboards/gergo/keymaps/oled/glcdfont.c"
 
 
 /* prevent stuck modifiers */
@@ -61,4 +60,9 @@
 #define RGBLIGHT_VAL_STEP 8
 #endif
 
+#endif
+
+#ifdef OLED_DRIVER_ENABLE
+  #define OLED_DISPLAY_128X64
+  #define OLED_TIMEOUT 15000
 #endif
