@@ -23,18 +23,12 @@
 
 
 #define USE_SERIAL
+#define SOFT_SERIAL_PIN D2
 
 #ifdef OLED_DRIVER_ENABLE
   #define OLED_DISPLAY_128X64
   #define OLED_TIMEOUT 30000
 #endif
 
-#define ___ KC_NO
 
-#define LAYOUT( \
-        L01, L02, L03, L04, L05, R01, R02, R03, R04, R05, 
-    ) \
-    { \
-        { L01, L02, L03, L04, L05 }, \
-        { R01, R02, R03, R04, R05 } \
-    }
+#define EE_HANDS
