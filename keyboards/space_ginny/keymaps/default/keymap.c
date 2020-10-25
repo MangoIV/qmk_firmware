@@ -1,11 +1,14 @@
 #include QMK_KEYBOARD_H
+#include <stdio.h>
 
 extern uint8_t is_master;
 
 #define _BASE 0
 
+char wpm_as_str[8];
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-  [_BASE] = LAYOUT(KC_1, KC_2,  KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0)
+  [_BASE] = LAYOUT(KC_A, KC_S,  KC_E, KC_T, KC_SPC, KC_BSPC, KC_N, KC_I, KC_O, KC_P)
 };
 
 void matrix_init_user(void) {
@@ -20,7 +23,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 #ifdef OLED_DRIVER_ENABLE
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-	return OLED_ROTATION_0;
+
+  if (is_keyboard_master()) {
+	    return OLED_ROTATION_90;
+    } else {
+	    return OLED_ROTATION_0;
+    }
 }
 
 static void render_qmk_logo(void) {
@@ -33,11 +41,20 @@ static void render_qmk_logo(void) {
 }
 
 static void render_status(void) {
-  render_qmk_logo();
+  oled_write_P(PSTR("This is \n\nspace_ \nginny \n\nv1.0\n\n"), false);
+  sprintf(wpm_as_str, "wpm:%03d", get_current_wpm());
+  oled_write(wpm_as_str,false);
+  led_t led_state = host_keyboard_led_state();
+  oled_write_P(PSTR("\n\ncaps: "), false);
+  oled_write_P(led_state.caps_lock ? PSTR("on ") : PSTR("off"), false);
 }
 
 void oled_task_user(void) {
-	render_status();
+      if (is_keyboard_master()) {
+        render_status(); // Renders the current keyboard state (layer, lock, caps, scroll, etc)
+    } else {
+        render_qmk_logo();
+    }
 }
 
 #endif

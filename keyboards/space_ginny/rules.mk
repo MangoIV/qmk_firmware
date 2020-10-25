@@ -24,3 +24,4 @@ AUDIO_ENABLE = no           # Audio output
 SPLIT_KEYBOARD = yes        # Use shared split_common code
 
 OLED_DRIVER_ENABLE = yes
+WPM_ENABLE = yes
