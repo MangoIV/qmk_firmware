@@ -39,6 +39,10 @@ bool send_steno_chord_user(steno_mode_t mode, uint8_t chord[6]) {
     return true;
 }
 
+void matrix_init_user() {
+  steno_set_mode(STENO_MODE_GEMINI); // or STENO_MODE_BOLT
+}
+
 #ifdef OLED_DRIVER_ENABLE
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 
