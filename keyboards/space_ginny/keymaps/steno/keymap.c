@@ -1,6 +1,5 @@
 #include QMK_KEYBOARD_H
 #include "keymap_steno.h"
-#include "split_util.h"
 #include <stdio.h>
 
 char wpm_as_str[8];
