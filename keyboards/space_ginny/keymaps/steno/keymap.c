@@ -3,7 +3,6 @@
 #include "split_util.h"
 #include <stdio.h>
 
-
 char wpm_as_str[8];
 extern uint8_t is_master;
 
@@ -45,6 +44,7 @@ void matrix_init_user() {
 }
 
 #ifdef OLED_DRIVER_ENABLE
+bool is_keyboard_left(void);
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 
   if (is_keyboard_master()) {
