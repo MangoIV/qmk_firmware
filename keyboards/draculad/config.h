@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config_common.h"
+
 #define VENDOR_ID 0x0000
 #define PRODUCT_ID 0x0001
 #define DEVICE_VER 0x0001
@@ -7,7 +9,7 @@
 #define PRODUCT draculad
 #define DESCRIPTION a < 40 - key input device
 
-#define MATRIX_ROWS 4
+#define MATRIX_ROWS 8
 #define MATRIX_COLS 5
 
 #define MATRIX_ROW_PINS {D4, C6, D7, E6}
@@ -32,7 +34,6 @@
 #ifdef RGB_DI_PIN
 #define RGBLIGHT_ANIMATIONS
 #define RGBLED_NUM 20
-#define RGBLED_SPLIT 10
 #define RGBLIGHT_HUE_STEP 8
 #define RGBLIGHT_SAT_STEP 8
 #define RGBLIGHT_VAL_STEP 8
@@ -40,7 +41,7 @@
 #endif
 
 #define ENCODERS_PAD_A {B2 , B4}
-#define ENCODERS_PAD_A {B6 , B5}
+#define ENCODERS_PAD_B {B6 , B5}
 
 
 #define EE_HANDS
