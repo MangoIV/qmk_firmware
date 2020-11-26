@@ -39,8 +39,8 @@
 #define RGBLIGHT_SLEEP
 #endif
 
-#define ENCODERS_ PAD_A {B2 , B4}
-#define ENCODERS_ PAD_A {B6 , B5}
+#define ENCODERS_PAD_A {B2 , B4}
+#define ENCODERS_PAD_A {B6 , B5}
 
 
 #define EE_HANDS
