@@ -14,7 +14,6 @@
 
 #define MATRIX_ROW_PINS {D4, C6, D7, E6}
 #define MATRIX_COL_PINS {F4, F5,F6, F7, B1}
-#define UNUSED_PINS
 
 #define DIODE_DIRECTION COL2ROW
 
@@ -29,11 +28,11 @@
   #define OLED_TIMEOUT 30000
 #endif
 
-
 #define RGB_DI_PIN D3
+#define RGBLIGHT_LIMIT_VAL 255
 #ifdef RGB_DI_PIN
 #define RGBLIGHT_ANIMATIONS
-#define RGBLED_NUM 20
+#define RGBLED_NUM 10
 #define RGBLIGHT_HUE_STEP 8
 #define RGBLIGHT_SAT_STEP 8
 #define RGBLIGHT_VAL_STEP 8
@@ -43,5 +42,6 @@
 #define ENCODERS_PAD_A {B2 , B4}
 #define ENCODERS_PAD_B {B6 , B5}
 
+#define UNUSED_PINS
 
 #define EE_HANDS

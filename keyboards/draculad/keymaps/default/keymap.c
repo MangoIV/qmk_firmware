@@ -5,18 +5,20 @@ extern uint8_t is_master;
 enum layer_number {
   _BASE = 0,
   _NUM,
-  _SYMB
+  _SYMB,
+  _ADJ
 };
 
 
 char wpm_as_str[8];
+extern uint8_t is_master;
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] =  LAYOUT( \
     KC_Q,         KC_W, KC_E,    KC_R,    KC_T,                             KC_Y, KC_U, KC_I,    KC_O,   KC_P, \
     LCTL_T(KC_A), KC_S, KC_D,    KC_F,    KC_G,                             KC_H, KC_J, KC_K ,   KC_L ,  KC_SCLN, \
     LSFT_T(KC_Z), KC_X, KC_C,    KC_V,    KC_B,                             KC_N, KC_M, KC_COMM, KC_DOT, RSFT_T(KC_SLSH), \
-                        KC_MUTE, KC_LALT, KC_BSPC, KC_SPC, LT(_NUM,KC_DEL), LT(_SYMB, KC_ENT), KC_PSCR, KC_CAPS \
+                        KC_MUTE, KC_LALT, KC_BSPC, KC_SPC, LT(_NUM,KC_DEL), LT(_SYMB, KC_ENT), KC_CAPS, TG(_ADJ) \
                     ), 
   [_NUM] = LAYOUT( \
     KC_1,         KC_2, KC_3,    KC_4,    KC_5,                             KC_6, KC_7, KC_8,    KC_9,   KC_0, \
@@ -29,6 +31,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     XXXXXXX, KC_F5, KC_F6,    KC_F7,    KC_F8,                      KC_LBRC, KC_RBRC, XXXXXXX ,   KC_GRV ,  KC_BSLS, \
     KC_LSFT, KC_F9, KC_F10,    KC_F11,    KC_F12,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_RSFT, \
                         XXXXXXX, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX, _______, KC_NO, KC_NO \
+    ),
+    [_ADJ] = LAYOUT( \
+    RESET,         XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   XXXXXXX, \
+    EEP_RST, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        RGB_MOD, RGB_HUI, RGB_SAI ,   RGB_VAI ,  XXXXXXX, \
+    XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, _______, \
+                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX \
     ) \
 };
 
@@ -43,10 +51,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 #ifdef OLED_DRIVER_ENABLE
+
+bool is_keyboard_left(void);
+
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 
-  if (is_keyboard_master()) {
-	    return OLED_ROTATION_90;
+ if (is_keyboard_master()) {
+    if(is_keyboard_left()){
+      return OLED_ROTATION_270;
+      }
+      else {
+        return OLED_ROTATION_90;
+      }
     } else {
 	    return OLED_ROTATION_0;
     }
@@ -68,6 +84,23 @@ static void render_status(void) {
   led_t led_state = host_keyboard_led_state();
   oled_write_P(PSTR("\n\ncaps: "), false);
   oled_write_P(led_state.caps_lock ? PSTR("on ") : PSTR("off"), false);
+  switch (get_highest_layer(layer_state)) {
+        case _BASE:
+            oled_write_P(PSTR("Base   "), false);
+            break;
+        case _NUM:
+            oled_write_P(PSTR("Numbers"), false);
+            break;
+        case _SYMB:
+            oled_write_P(PSTR("Symbols"), false);
+            break;
+        case _ADJ:
+            oled_write_P(PSTR("Adjust "), false);
+            break;
+        default:
+            oled_write_P(PSTR("Unkn "), false);
+            break;
+    }
 }
 
 void oled_task_user(void) {
@@ -90,20 +123,21 @@ void encoder_update_user(uint8_t index, bool clockwise) {
             tap_code(KC_VOLD);
         }
     }
-    else if (index == 1) {
+    else if (index == 2) {
+      if(clockwise) {
+        rgblight_increase_hue_noeeprom();
+      }
+      else{
+        rgblight_decrease_hue_noeeprom();
+      }
+    }
+    else if (index == 3  ) {
         // Page up/Page down
         if (clockwise) {
             tap_code(KC_PGDN);
         } else {
             tap_code(KC_PGUP);
         }
-    }
-    else if (index > 1){
-      if (clockwise) {
-              rgblight_increase_hue_noeeprom();
-          } else {
-              rgblight_decrease_hue_noeeprom();
-          }
     }
 
 }
