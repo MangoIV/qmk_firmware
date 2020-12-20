@@ -6,6 +6,7 @@ enum layer_number {
   _BASE = 0,
   _NUM,
   _SYMB,
+  _MUS,
   _ADJ
 };
 
@@ -18,7 +19,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_Q,         KC_W, KC_E,    KC_R,    KC_T,                             KC_Y, KC_U, KC_I,    KC_O,   KC_P, \
     KC_A, KC_S, KC_D,    KC_F,    KC_G,                             KC_H, KC_J, KC_K ,   KC_L ,  KC_SCLN, \
     LSFT_T(KC_Z), KC_X, KC_C,    KC_V,    KC_B,                             KC_N, KC_M, KC_COMM, KC_DOT, RSFT_T(KC_SLSH), \
-                        KC_MUTE, KC_LCTL, LALT_T(KC_BSPC), KC_SPC, LT(_NUM,KC_DEL), LT(_SYMB, KC_ENT), KC_CAPS, TG(_ADJ) \
+                        KC_MUTE, KC_LCTL, LALT_T(KC_BSPC), LT(_MUS, KC_SPC), LT(_NUM,KC_DEL), LT(_SYMB, KC_ENT), KC_CAPS, TG(_ADJ) \
                     ), 
   [_NUM] = LAYOUT( \
     KC_1,         KC_2, KC_3,    KC_4,    KC_5,                             KC_6, KC_7, KC_8,    KC_9,   KC_0, \
@@ -32,6 +33,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LSFT, KC_F9, KC_F10,    KC_F11,    KC_F12,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_RSFT, \
                         XXXXXXX, KC_LALT, XXXXXXX, XXXXXXX, XXXXXXX, _______, KC_NO, KC_NO \
     ),
+    [_MUS] = LAYOUT(\
+   KC_LCTL, XXXXXXX,    XXXXXXX,  XXXXXXX,XXXXXXX,              XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   XXXXXXX, \
+    KC_LALT, KC_BTN3, KC_BTN2,   KC_BTN1 ,    XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX ,   XXXXXXX ,  XXXXXXX, \
+    KC_LSFT, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
+                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX \
+    ), 
     [_ADJ] = LAYOUT( \
     RESET,         XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   XXXXXXX, \
     EEP_RST, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        RGB_MOD, RGB_HUI, RGB_SAI ,   RGB_VAI ,  RGB_TOG, \
@@ -159,6 +166,9 @@ static void render_status(void) {
         case _ADJ:
             oled_write_P(PSTR("Adjust "), false);
             break;
+        case _MUS:
+            oled_write_P(PSTR("Mouse  "), false);
+            break;
         default:
             oled_write_P(PSTR("Unkn "), false);
             break;
@@ -187,18 +197,18 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     }
     else if (index == 2) {
       if(clockwise) {
-        rgblight_increase_hue_noeeprom();
+        tap_code(KC_PGUP);
       }
       else{
-        rgblight_decrease_hue_noeeprom();
+        tap_code(KC_PGDN);
       }
     }
     else if (index == 3  ) {
         // Page up/Page down
         if (clockwise) {
-          tap_code(KC_PGUP);
+          tap_code(KC_WH_U);
         } else {
-          tap_code(KC_PGDN);
+          tap_code(KC_WH_D);
         }
     }
 
