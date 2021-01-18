@@ -1,4 +1,5 @@
 #include "draculad.h"
+#include "pimoroni_trackball.h"
 
 extern uint8_t is_master;
 
@@ -23,8 +24,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                     ), 
   [_NUM] = LAYOUT( \
     KC_1,         KC_2, KC_3,    KC_4,    KC_5,                             KC_6, KC_7, KC_8,    KC_9,   KC_0, \
-    KC_TAB, XXXXXXX, KC_VOLD,    KC_VOLU,    XXXXXXX,                      KC_LEFT, KC_DOWN, KC_UP ,   KC_RIGHT ,  KC_QUOT, \
-    KC_LSFT, XXXXXXX, XXXXXXX,    KC_MUTE,    RESET,                        KC_HOME, KC_END, KC_PGUP, KC_PGDN, KC_RSFT, \
+    KC_TAB, KC_MUTE, KC_VOLD,    KC_VOLU,    XXXXXXX,                      KC_LEFT, KC_DOWN, KC_UP ,   KC_RIGHT ,  KC_QUOT, \
+    KC_LSFT, XXXXXXX, KC_MPRV,    KC_MNXT,    RESET,                        KC_HOME, KC_END, KC_PGUP, KC_PGDN, KC_RSFT, \
                         XXXXXXX, XXXXXXX, KC_LALT, XXXXXXX, KC_NO, _______, KC_ENT, KC_NO \
     ), 
   [_SYMB] = LAYOUT( \
