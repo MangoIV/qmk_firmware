@@ -55,13 +55,13 @@ void update_member(int8_t* member, int16_t* offset) {
     }
 }
 
-__attribute__((weak)) void trackball_check_click(bool pressed, report_mouse_t* mouse) {
-    if (pressed) {
-        mouse->buttons |= MOUSE_BTN1;
-    } else {
-        mouse->buttons &= ~MOUSE_BTN1;
-    }
-}
+// __attribute__((weak)) void trackball_check_click(bool pressed, report_mouse_t* mouse) {
+//     if (pressed) {
+//         mouse->buttons |= MOUSE_BTN1;
+//     } else {
+//         mouse->buttons &= ~MOUSE_BTN1;
+//     }
+// }
 
 void trackball_register_button(bool pressed, enum mouse_buttons button) {
     report_mouse_t currentReport = pointing_device_get_report();
@@ -131,7 +131,7 @@ void pointing_device_task(void) {
 
     report_mouse_t mouse = pointing_device_get_report();
 
-    trackball_check_click(state[4] & (1 << 7), &mouse);
+    //trackball_check_click(state[4] & (1 << 7), &mouse);
 
 #ifndef PIMORONI_TRACKBALL_ROTATE
     update_member(&mouse.x, &x_offset);
