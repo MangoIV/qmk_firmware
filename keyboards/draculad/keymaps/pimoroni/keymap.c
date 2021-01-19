@@ -231,11 +231,21 @@ void encoder_update_user(uint8_t index, bool clockwise) {
         }
     }
     else if (index == 2) {
-      if(clockwise) {
-        tap_code(KC_PGUP);
+      if(IS_LAYER_ON(_ADJ){
+        if(clockwise) {
+            tap_code(BALL_HUI);
+          }
+          else{
+            tap_code(KC_PGDN);
+          } 
       }
-      else{
-        tap_code(KC_PGDN);
+      else {
+        if(clockwise) {
+            tap_code(KC_PGUP);
+          }
+          else{
+            tap_code(KC_PGDN);
+          }
       }
     }
     else if (index == 3  ) {
@@ -246,6 +256,5 @@ void encoder_update_user(uint8_t index, bool clockwise) {
           tap_code(KC_WH_D);
         }
     }
-
 }
 #endif
