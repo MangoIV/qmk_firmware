@@ -88,7 +88,7 @@ bool has_report_changed (report_mouse_t first, report_mouse_t second) {
 }
 
 
-__attribute__((weak)) void pointing_device_init(void) { trackball_set_rgbw(0xFF, 0x00, 0xFF, 0x00); }
+__attribute__((weak)) void pointing_device_init(void) { trackball_set_rgbw(0xFF, 0x00, 0x00, 0x00); }
 
 void pointing_device_task(void) {
     static bool     debounce;

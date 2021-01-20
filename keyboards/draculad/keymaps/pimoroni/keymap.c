@@ -15,6 +15,7 @@ enum custom_keycodes {
   BALL_HUI,//cycles hue
   BALL_WHT,//cycles white
   BALL_DEC,//decreased color
+  BALL_SCR,//scrolls
 };
 
 
@@ -42,7 +43,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_MUS] = LAYOUT(\
    KC_LCTL, XXXXXXX,    XXXXXXX,  XXXXXXX,XXXXXXX,              XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   XXXXXXX, \
-    KC_LALT, KC_BTN3, KC_BTN2,   KC_BTN1 ,    XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX ,   XXXXXXX ,  XXXXXXX, \
+    KC_LALT, KC_BTN3, KC_BTN2,   KC_BTN1 ,    BALL_SCR,                        XXXXXXX, XXXXXXX, XXXXXXX ,   XXXXXXX ,  XXXXXXX, \
     KC_LSFT, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
                         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX \
     ), 
@@ -250,13 +251,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record){
       cycle_white();
     }
     break;
-    
+
   case BALL_DEC:
    if(record-> event.pressed){
       decrease_color();
     }
     break;
-  } 
+
+  case BALL_SCR:
+   if(record->event.pressed){
+     trackball_set_scrolling(true);
+   } else{
+     trackball_set_scrolling(false);
+   }
+  }
   return true;
 }
 
