@@ -24,8 +24,13 @@ static int16_t h_offset       = 0;
 static int16_t v_offset       = 0;
 static float   precisionSpeed = 1;
 
+static uint16_t i2c_timeout_timer;
+
 #ifndef I2C_TIMEOUT
 #    define I2C_TIMEOUT 100
+#endif
+#ifndef I2C_WAITCHECK
+#    define I2C_WAITCHECK 1000
 #endif
 #ifndef MOUSE_DEBOUNCE
 #    define MOUSE_DEBOUNCE 5
@@ -55,13 +60,13 @@ void update_member(int8_t* member, int16_t* offset) {
     }
 }
 
-// __attribute__((weak)) void trackball_check_click(bool pressed, report_mouse_t* mouse) {
-//     if (pressed) {
-//         mouse->buttons |= MOUSE_BTN1;
-//     } else {
-//         mouse->buttons &= ~MOUSE_BTN1;
-//     }
-// }
+__attribute__((weak)) void trackball_check_click(bool pressed, report_mouse_t* mouse) {
+    if (pressed) {
+        mouse->buttons |= MOUSE_BTN1;
+    } else {
+        mouse->buttons &= ~MOUSE_BTN1;
+    }
+}
 
 void trackball_register_button(bool pressed, enum mouse_buttons button) {
     report_mouse_t currentReport = pointing_device_get_report();
@@ -78,15 +83,7 @@ void  trackball_set_precision(float precision) { precisionSpeed = precision; }
 bool  trackball_is_scrolling(void) { return scrolling; }
 void  trackball_set_scrolling(bool scroll) { scrolling = scroll; }
 
-bool has_report_changed (report_mouse_t first, report_mouse_t second) {
-    return !(
-        (!first.buttons && first.buttons == second.buttons) &&
-        (!first.x && first.x == second.x) &&
-        (!first.y && first.y == second.y) &&
-        (!first.h && first.h == second.h) &&
-        (!first.v && first.v == second.v) );
-}
-
+bool has_report_changed(report_mouse_t first, report_mouse_t second) { return !((!first.buttons && first.buttons == second.buttons) && (!first.x && first.x == second.x) && (!first.y && first.y == second.y) && (!first.h && first.h == second.h) && (!first.v && first.v == second.v)); }
 
 __attribute__((weak)) void pointing_device_init(void) { trackball_set_rgbw(0x80, 0x00, 0x00, 0x00); }
 
@@ -94,36 +91,40 @@ void pointing_device_task(void) {
     static bool     debounce;
     static uint16_t debounce_timer;
     uint8_t         state[5] = {};
-    if (i2c_readReg(TRACKBALL_WRITE, 0x04, state, 5, I2C_TIMEOUT) == I2C_STATUS_SUCCESS) {
-        if (!state[4] && !debounce) {
-            if (scrolling) {
+    if (timer_elapsed(i2c_timeout_timer) > I2C_WAITCHECK) {
+        if (i2c_readReg(TRACKBALL_WRITE, 0x04, state, 5, I2C_TIMEOUT) == I2C_STATUS_SUCCESS) {
+            if (!state[4] && !debounce) {
+                if (scrolling) {
 #ifdef PIMORONI_TRACKBALL_INVERT_X
-                h_offset += mouse_offset(state[2], state[3], 1);
+                    h_offset += mouse_offset(state[2], state[3], 1);
 #else
-                h_offset -= mouse_offset(state[2], state[3], 1);
+                    h_offset -= mouse_offset(state[2], state[3], 1);
 #endif
 #ifdef PIMORONI_TRACKBALL_INVERT_Y
-                v_offset += mouse_offset(state[1], state[0], 1);
+                    v_offset += mouse_offset(state[1], state[0], 1);
 #else
-                v_offset -= mouse_offset(state[1], state[0], 1);
+                    v_offset -= mouse_offset(state[1], state[0], 1);
 #endif
+                } else {
+#ifdef PIMORONI_TRACKBALL_INVERT_X
+                    x_offset -= mouse_offset(state[2], state[3], 5);
+#else
+                    x_offset += mouse_offset(state[2], state[3], 5);
+#endif
+#ifdef PIMORONI_TRACKBALL_INVERT_Y
+                    y_offset -= mouse_offset(state[1], state[0], 5);
+#else
+                    y_offset += mouse_offset(state[1], state[0], 5);
+#endif
+                }
             } else {
-#ifdef PIMORONI_TRACKBALL_INVERT_X
-                x_offset -= mouse_offset(state[2], state[3], 5);
-#else
-                x_offset += mouse_offset(state[2], state[3], 5);
-#endif
-#ifdef PIMORONI_TRACKBALL_INVERT_Y
-                y_offset -= mouse_offset(state[1], state[0], 5);
-#else
-                y_offset += mouse_offset(state[1], state[0], 5);
-#endif
+                if (state[4]) {
+                    debounce       = true;
+                    debounce_timer = timer_read();
+                }
             }
         } else {
-            if (state[4]) {
-                debounce       = true;
-                debounce_timer = timer_read();
-            }
+            i2c_timeout_timer = timer_read();
         }
     }
 
@@ -131,7 +132,7 @@ void pointing_device_task(void) {
 
     report_mouse_t mouse = pointing_device_get_report();
 
-    //trackball_check_click(state[4] & (1 << 7), &mouse);
+    trackball_check_click(state[4] & (1 << 7), &mouse);
 
 #ifndef PIMORONI_TRACKBALL_ROTATE
     update_member(&mouse.x, &x_offset);

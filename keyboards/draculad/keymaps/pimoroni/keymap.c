@@ -1,5 +1,6 @@
 #include "draculad.h"
 #include "pimoroni_trackball.h"
+#include "pointing_device.h"
 
 extern uint8_t is_master;
 
@@ -16,6 +17,9 @@ enum custom_keycodes {
   BALL_WHT,//cycles white
   BALL_DEC,//decreased color
   BALL_SCR,//scrolls
+  BALL_LCL,//left click
+  BALL_RCL,//right click
+  BALL_MCL,//middle click
 };
 
 
@@ -43,7 +47,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_MUS] = LAYOUT(\
    KC_LCTL, XXXXXXX,    XXXXXXX,  XXXXXXX,XXXXXXX,              XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   XXXXXXX, \
-    KC_LALT, KC_BTN3, KC_BTN2,   KC_BTN1 ,    BALL_SCR,                        XXXXXXX, XXXXXXX, XXXXXXX ,   XXXXXXX ,  XXXXXXX, \
+    KC_LALT, BALL_MCL, BALL_RCL,   BALL_LCL ,    BALL_SCR,                        XXXXXXX, XXXXXXX, XXXXXXX ,   XXXXXXX ,  XXXXXXX, \
     KC_LSFT, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
                         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX \
     ), 
@@ -190,6 +194,7 @@ void oled_task_user(void) {
 
 #endif
 
+#ifdef PIMORONI_TRACKBALL_ENABLE
 
 uint8_t white = 0;
 uint8_t red = 255;
@@ -264,10 +269,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record){
    } else{
      trackball_set_scrolling(false);
    }
+   break;
+
+  case BALL_LCL:
+     record->event.pressed?trackball_register_button(true,MOUSE_BTN1):trackball_register_button(false,MOUSE_BTN1);
+     break;
+  case BALL_RCL:
+      record->event.pressed?trackball_register_button(true,MOUSE_BTN2):trackball_register_button(false,MOUSE_BTN2);
+      break;
+  case BALL_MCL:
+      record->event.pressed?trackball_register_button(true,MOUSE_BTN3):trackball_register_button(false,MOUSE_BTN3);
+      break;
   }
   return true;
 }
-
+#endif
 #ifdef ENCODER_ENABLE
 void encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) {
@@ -280,9 +296,11 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     }
     else if (index == 2) {
       switch (get_highest_layer(layer_state)) {
+        #ifdef PIMORONI_TRACKBALL_ENABLE
         case _ADJ:
             clockwise?ball_increase_hue():cycle_white();
             break;
+        #endif 
         case _MUS:
             clockwise?tap_code(KC_WH_U):tap_code(KC_WH_D);
             break;
