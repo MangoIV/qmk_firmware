@@ -12,7 +12,9 @@ enum layer_number {
 };
 
 enum custom_keycodes {
-  BALL_HUI,
+  BALL_HUI,//cycles hue
+  BALL_WHT,//cycles white
+  BALL_DEC,//decreased color
 };
 
 
@@ -45,7 +47,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX \
     ), 
     [_ADJ] = LAYOUT( \
-    RESET,         XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                BALL_HUI, XXXXXXX, XXXXXXX,    XXXXXXX,   XXXXXXX, \
+    RESET,         XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                BALL_HUI, BALL_WHT, BALL_DEC,    XXXXXXX,   XXXXXXX, \
     EEP_RST, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        RGB_MOD, RGB_HUI, RGB_SAI ,   RGB_VAI ,  RGB_TOG, \
     XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        RGB_RMOD, RGB_HUD, RGB_SAD, RGB_VAD, _______, \
                         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______ \
@@ -193,11 +195,10 @@ uint8_t red = 255;
 uint8_t green = 0;
 uint8_t blue = 0;
 
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record){
-  switch (keycode){
-  case  BALL_HUI:
-    if(record->event.pressed){
+void ball_increase_hue(void){
+      if(red!=255&&green!=255&&blue!=255){
+        red =255;
+      }
       if (red==255&&green<255&&blue==0){
        green += 15;
       } else if(green==255&&blue==0&&red>0){
@@ -212,11 +213,50 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record){
         blue -=15;
       }
       trackball_set_rgbw(red,green,blue,white);
-    } else{
+}
 
+void decrease_color(void){
+  if (green>0){
+    green-=15;
+  }
+  if (red>0){
+    red-=15;
+  }
+  if (blue>0){
+    blue-=15;
+  }
+  trackball_set_rgbw(red,green,blue,white);
+}
+
+void cycle_white(void){
+  if (white<255){
+    white +=15;
+  } else{
+    white=0;
+  }
+  trackball_set_rgbw(red,green,blue,white);
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record){
+  switch (keycode){
+  case  BALL_HUI:
+    if(record->event.pressed){
+      ball_increase_hue();
     }
     break;
-  }
+
+  case BALL_WHT:
+    if(record-> event.pressed){
+      cycle_white();
+    }
+    break;
+    
+  case BALL_DEC:
+   if(record-> event.pressed){
+      decrease_color();
+    }
+    break;
+  } 
   return true;
 }
 
@@ -231,30 +271,19 @@ void encoder_update_user(uint8_t index, bool clockwise) {
         }
     }
     else if (index == 2) {
-      if(IS_LAYER_ON(_ADJ){
-        if(clockwise) {
-            tap_code(BALL_HUI);
-          }
-          else{
-            tap_code(KC_PGDN);
-          } 
-      }
-      else {
-        if(clockwise) {
-            tap_code(KC_PGUP);
-          }
-          else{
-            tap_code(KC_PGDN);
-          }
-      }
+      switch (get_highest_layer(layer_state)) {
+        case _ADJ:
+            clockwise?ball_increase_hue():cycle_white();
+            break;
+        case _MUS:
+            clockwise?tap_code(KC_WH_U):tap_code(KC_WH_D);
+            break;
+        default:
+            clockwise?tap_code(KC_PGUP):tap_code(KC_PGDN);
+            break;
+      } 
     }
-    else if (index == 3  ) {
-        // Page up/Page down
-        if (clockwise) {
-          tap_code(KC_WH_U);
-        } else {
-          tap_code(KC_WH_D);
-        }
-    }
+    // I only have 2 encoders on the the pimoroni example board, just add else ifs for your other encoders...
+    // the missing ones are encoder 1 on the right side and encoder 3 on the left side
 }
 #endif
