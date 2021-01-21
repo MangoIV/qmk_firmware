@@ -47,7 +47,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [_MUS] = LAYOUT(\
    KC_LCTL, XXXXXXX,    XXXXXXX,  XXXXXXX,XXXXXXX,              XXXXXXX, XXXXXXX, XXXXXXX,    XXXXXXX,   XXXXXXX, \
-    KC_LALT, BALL_MCL, BALL_RCL,   BALL_NCL ,    BALL_SCR,                        XXXXXXX, XXXXXXX, XXXXXXX ,   XXXXXXX ,  XXXXXXX, \
+    KC_LALT, KC_BTN3, KC_BTN2,   KC_BTN1 ,    BALL_SCR,                        XXXXXXX, XXXXXXX, XXXXXXX ,   XXXXXXX ,  XXXXXXX, \
     KC_LSFT, XXXXXXX, XXXXXXX,    XXXXXXX,    XXXXXXX,                        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, \
                         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX \
     ),
@@ -276,7 +276,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record){
       record->event.pressed?register_code(KC_BTN2):unregister_code(KC_BTN2);
       break;
   case BALL_MCL:
-      record->event.pressed?register_code(KC_BTN3):uneregister_code(KC_BTN3);
+      record->event.pressed?register_code(KC_BTN3):unregister_code(KC_BTN3);
       break;
   }
   return true;

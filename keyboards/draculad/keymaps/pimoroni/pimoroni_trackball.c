@@ -60,23 +60,52 @@ void update_member(int8_t* member, int16_t* offset) {
     }
 }
 
-// __attribute__((weak)) void trackball_check_click(bool pressed, report_mouse_t* mouse) {
-//     if (pressed) {
-//         mouse->buttons |= MOUSE_BTN1;
-//     } else {
-//         mouse->buttons &= ~MOUSE_BTN1;
-//     }
-// }
+__attribute__((weak)) void trackball_check_click(bool pressed, report_mouse_t* mouse) {
+    if (pressed) {
+        mouse->buttons |= MOUSE_BTN1;
+    } else {
+        mouse->buttons &= ~MOUSE_BTN1;
+    }
+}
 
-// void trackball_register_button(bool pressed, enum mouse_buttons button) {
-//     report_mouse_t currentReport = pointing_device_get_report();
-//     if (pressed) {
-//         currentReport.buttons |= button;
-//     } else {
-//         currentReport.buttons &= ~button;
-//     }
-//     pointing_device_set_report(currentReport);
-// }
+bool process_record_kb(uint16_t keycode, keyrecord_t* record) {
+    if (true) {
+        xprintf("KL: kc: %u, col: %u, row: %u, pressed: %u\n", keycode, record->event.key.col, record->event.key.row, record->event.pressed);
+    }
+
+
+    if (!process_record_user(keycode, record)) { return false; }
+
+/* If Mousekeys is disabled, then use handle the mouse button
+ * keycodes.  This makes things simpler, and allows usage of
+ * the keycodes in a consistent manner.  But only do this if
+ * Mousekeys is not enable, so it's not handled twice.
+ */
+#ifndef MOUSEKEY_ENABLE
+    if (IS_MOUSEKEY_BUTTON(keycode)) {
+        report_mouse_t currentReport = pointing_device_get_report();
+        if (record->event.pressed) {
+            currentReport.buttons |= 1 << (keycode - KC_MS_BTN1);
+        } else {
+            currentReport.buttons &= ~(1 << (keycode - KC_MS_BTN1));
+        }
+        pointing_device_set_report(currentReport);
+        pointing_device_send();
+    }
+#endif
+
+    return true;
+}
+
+void trackball_register_button(bool pressed, enum mouse_buttons button) {
+    report_mouse_t currentReport = pointing_device_get_report();
+    if (pressed) {
+        currentReport.buttons |= button;
+    } else {
+        currentReport.buttons &= ~button;
+    }
+    pointing_device_set_report(currentReport);
+}
 
 float trackball_get_precision(void) { return precisionSpeed; }
 void  trackball_set_precision(float precision) { precisionSpeed = precision; }
